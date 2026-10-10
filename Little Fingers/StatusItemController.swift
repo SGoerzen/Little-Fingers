@@ -7,13 +7,17 @@
 //
 
 import Cocoa
+import Carbon
 
 class StatusItemController: NSObject {
 	let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 	var isAccessibilityEnabled = false
 	var accessibilityTimer:Timer?
+	var dimWindows:[NSWindow] = []
+	var missingAccessHotKey:EventHotKeyRef?
 	
 	let aboutWindowController = AboutWindowController(windowNibName: "AboutWindow")
+	let creditsWindowController = CreditsWindowController()
 	
 	override init() {
 		super.init()
@@ -30,7 +34,7 @@ class StatusItemController: NSObject {
 		}
 		
 		NotificationCenter.default.addObserver(self,
-		                                       selector: #selector(updateIcon),
+		                                       selector: #selector(lockChanged),
 		                                       name: NSNotification.Name(rawValue: SINotificationLockChanged),
 		                                       object: nil)
 	}
@@ -47,6 +51,7 @@ class StatusItemController: NSObject {
 		}
 		else {
 			showSecurityPrivacy()
+			registerMissingAccessHotKey()
 		}
 		accessibilityTimer = Timer.scheduledTimer(timeInterval: 0.5,
 		                                          target: self,
@@ -87,11 +92,46 @@ class StatusItemController: NSObject {
 		item.target = self
 		menu.addItem(item)
 		
+		let creditsItem = NSMenuItem(title: "Credits…", action: #selector(showCredits), keyEquivalent: "")
+		creditsItem.target = self
+		menu.addItem(creditsItem)
+		
 		menu.addItem(NSMenuItem.separator())
 		
 		menu.addItem(NSMenuItem(title: "Quit Little Fingers", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
 		
 		statusItem.menu = menu
+	}
+	
+	// without accessibility access the event taps can't see the lock shortcut, but a
+	// regular hot key needs no permission, so use one to explain why nothing happens
+	func registerMissingAccessHotKey() {
+		var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+		let handler: EventHandlerUPP = { _, _, userData in
+			let controller = Unmanaged<StatusItemController>.fromOpaque(userData!).takeUnretainedValue()
+			controller.showMissingAccessAlert()
+			return noErr
+		}
+		InstallEventHandler(GetApplicationEventTarget(), handler, 1, &eventType,
+		                    Unmanaged.passUnretained(self).toOpaque(), nil)
+		
+		let hotKeyID = EventHotKeyID(signature: OSType(0x4C46_4E47), id: 1) // 'LFNG'
+		let modifiers = UInt32(controlKey | optionKey | shiftKey | cmdKey)
+		RegisterEventHotKey(UInt32(kVK_ANSI_L), modifiers, hotKeyID,
+		                    GetApplicationEventTarget(), 0, &missingAccessHotKey)
+	}
+	
+	func showMissingAccessAlert() {
+		NSApp.activate(ignoringOtherApps: true)
+		let alert = NSAlert()
+		alert.alertStyle = .warning
+		alert.messageText = "Little Fingers can't lock your Mac"
+		alert.informativeText = "macOS hasn't allowed Little Fingers to control this computer. Turn it on in System Settings → Privacy & Security → Accessibility.\n\nIf Little Fingers is already listed there, remove it with the – button and allow it again."
+		alert.addButton(withTitle: "Open System Settings")
+		alert.addButton(withTitle: "Cancel")
+		if alert.runModal() == .alertFirstButtonReturn {
+			NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
+		}
 	}
 	
 	func showSecurityPrivacy() {
@@ -103,6 +143,86 @@ class StatusItemController: NSObject {
 	@objc func showAbout() {
 		NSApp.activate(ignoringOtherApps: true)
 		aboutWindowController.showWindow(NSApp.delegate)
+	}
+	
+	@objc func showCredits() {
+		NSApp.activate(ignoringOtherApps: true)
+		creditsWindowController.showWindow(nil)
+	}
+	
+	@objc func lockChanged() {
+		updateIcon()
+		updateDim()
+	}
+	
+	func updateDim() {
+		if TapController.isLocked() && UserDefaults.standard.bool(forKey: "dimWhenLocked") {
+			showDim()
+		}
+		else {
+			hideDim()
+		}
+	}
+	
+	// covers every screen (menu bar included) in black, e.g. for cleaning the display
+	func showDim() {
+		if !dimWindows.isEmpty {
+			return
+		}
+		for screen in NSScreen.screens {
+			let window = NSWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
+			window.backgroundColor = .black
+			window.isOpaque = false
+			window.alphaValue = 0
+			window.level = .screenSaver
+			window.ignoresMouseEvents = true
+			window.canHide = false
+			window.isReleasedWhenClosed = false
+			window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+			window.setFrame(screen.frame, display: false)
+			
+			// dim gray, so the hint doesn't get in the way when cleaning the display
+			let hint = NSTextField(labelWithString: "Press ⌃⌥⇧⌘L to unlock")
+			hint.font = NSFont.systemFont(ofSize: 24, weight: .medium)
+			hint.textColor = NSColor(white: 0.35, alpha: 1)
+			hint.translatesAutoresizingMaskIntoConstraints = false
+			window.contentView!.addSubview(hint)
+			NSLayoutConstraint.activate([
+				hint.centerXAnchor.constraint(equalTo: window.contentView!.centerXAnchor),
+				hint.centerYAnchor.constraint(equalTo: window.contentView!.centerYAnchor),
+			])
+			window.orderFrontRegardless()
+			dimWindows.append(window)
+		}
+		// the cursor can only be hidden while the app is active
+		NSApp.activate(ignoringOtherApps: true)
+		NSCursor.hide()
+		NSAnimationContext.runAnimationGroup({ context in
+			context.duration = 0.3
+			for window in dimWindows {
+				window.animator().alphaValue = 1
+			}
+		}, completionHandler: nil)
+	}
+	
+	func hideDim() {
+		if dimWindows.isEmpty {
+			return
+		}
+		let windows = dimWindows
+		dimWindows = []
+		NSCursor.unhide()
+		NSAnimationContext.runAnimationGroup({ context in
+			context.duration = 0.3
+			for window in windows {
+				window.animator().alphaValue = 0
+			}
+		}, completionHandler: {
+			for window in windows {
+				window.orderOut(nil)
+			}
+			(NSApp.delegate as! AppDelegate).hideApp()
+		})
 	}
 	
 	@objc func updateIcon() {

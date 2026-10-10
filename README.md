@@ -10,7 +10,8 @@ Press **⌃ Control + ⌥ Option + ⇧ Shift + ⌘ Command + L** to lock all inp
 
 - The menu-bar icon shows whether input is locked.
 - The lock pauses on its own when the screensaver starts, the screen locks, or a shutdown or logout begins.
-- The app has no Dock icon. Use the menu-bar item to open **About** (which has a **Launch at login** option) or to quit.
+- The app has no Dock icon. Use the menu-bar item to open **About** (with options for **Darken display while locked** and **Launch at login**), **Credits**, or to quit.
+- With **Darken display while locked** turned on, all screens turn black while locked. That's handy for cleaning the display.
 
 > **Note:** The `L` key is matched by its physical key code, which is where `L` sits on a US layout. On other keyboard layouts the shortcut may be a different key.
 
@@ -33,13 +34,20 @@ make install    # build and copy to /Applications (override with INSTALL_DIR=…
 make uninstall  # remove from /Applications
 make zip        # build and package as build/Little-Fingers.zip
 make clean      # remove build artifacts
+make signing-cert  # create the local signing certificate (once)
 ```
 
 The built app lands in `build/DerivedData/Build/Products/<Configuration>/Little Fingers.app`. You can also open `Little Fingers.xcodeproj` in Xcode and run the **Little Fingers** scheme.
 
-### Accessibility after rebuilding
+### Code signing and Accessibility
 
-Local builds are signed ad hoc, so each rebuild looks like a new app to macOS and the existing Accessibility entry stops working. If the shortcut does nothing after a rebuild, remove Little Fingers from the Accessibility list and grant access again.
+macOS ties the Accessibility permission to the app's code signature. To keep the permission across rebuilds, create a local signing certificate once:
+
+```bash
+make signing-cert
+```
+
+From then on, `make` signs every build with that certificate, so you only grant Accessibility once. Without the certificate the app is signed ad hoc. Every rebuild then looks like a new app to macOS, and you have to remove Little Fingers from the Accessibility list and grant access again.
 
 ## How it works
 
@@ -47,4 +55,5 @@ Local builds are signed ad hoc, so each rebuild looks like a new app to macOS an
 
 ## Credits
 
-Little Fingers was created by Shaun Inman. All original rights belong to him.
+- [Shaun Inman](https://github.com/shauninman): original author, versions up to 1.1. All original rights belong to him.
+- [Dr.-Ing. Sergej Görzen](https://github.com/SGoerzen): version 1.2

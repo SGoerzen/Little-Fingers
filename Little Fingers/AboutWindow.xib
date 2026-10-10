@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="AboutWindowController" customModule="Little_Fingers" customModuleProvider="target">
             <connections>
                 <outlet property="autoLaunch" destination="3Al-bX-U1b" id="ecb-NU-96v"/>
+                <outlet property="dimWhenLocked" destination="dWl-cB-x01" id="dWl-oT-x02"/>
                 <outlet property="creditsScrollView" destination="vEh-hX-d7D" id="f1G-tv-Ba6"/>
                 <outlet property="iconImageView" destination="HAE-tO-Sfe" id="p6y-FN-XbP"/>
                 <outlet property="nameLabel" destination="4uz-NS-kQd" id="Uas-4k-0bB"/>
@@ -19,10 +20,10 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="1Kw-KX-AQN" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
-            <rect key="contentRect" x="139" y="81" width="284" height="352"/>
+            <rect key="contentRect" x="139" y="81" width="284" height="376"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="iJJ-Ip-kvp">
-                <rect key="frame" x="0.0" y="0.0" width="284" height="352"/>
+                <rect key="frame" x="0.0" y="0.0" width="284" height="376"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Al-bX-U1b">
@@ -36,8 +37,19 @@
                             <action selector="changeAutoLaunch:" target="-2" id="iMq-N2-mrc"/>
                         </connections>
                     </button>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dWl-cB-x01">
+                        <rect key="frame" x="18" y="37" width="248" height="18"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="check" title="Darken display while locked" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="dWl-cL-x03">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="changeDimWhenLocked:" target="-2" id="dWl-aC-x04"/>
+                        </connections>
+                    </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4uz-NS-kQd">
-                        <rect key="frame" x="18" y="242" width="248" height="18"/>
+                        <rect key="frame" x="18" y="266" width="248" height="18"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="App Name" id="Egs-ij-eQE">
                             <font key="font" metaFont="systemBold" size="14"/>
@@ -46,12 +58,12 @@
                         </textFieldCell>
                     </textField>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HAE-tO-Sfe">
-                        <rect key="frame" x="110" y="268" width="64" height="64"/>
+                        <rect key="frame" x="110" y="292" width="64" height="64"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="DqJ-Dj-hO7"/>
                     </imageView>
                     <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vEh-hX-d7D">
-                        <rect key="frame" x="-1" y="42" width="286" height="171"/>
+                        <rect key="frame" x="-1" y="66" width="286" height="171"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" ambiguous="YES" id="mHr-Ny-HA5">
                             <rect key="frame" x="1" y="1" width="269" height="169"/>
@@ -78,7 +90,7 @@
                         </scroller>
                     </scrollView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cJc-sw-iVp">
-                        <rect key="frame" x="18" y="221" width="248" height="13"/>
+                        <rect key="frame" x="18" y="245" width="248" height="13"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="version" id="FQ7-gA-thm">
                             <font key="font" metaFont="system" size="10"/>
