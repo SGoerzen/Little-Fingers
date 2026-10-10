@@ -20,6 +20,7 @@ class AboutWindowController: NSWindowController {
 	@IBOutlet weak var iconImageView:NSImageView!
 	@IBOutlet weak var creditsScrollView: NSScrollView!
 	@IBOutlet weak var autoLaunch:NSButton!
+	@IBOutlet weak var dimWhenLocked:NSButton!
 	
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -42,6 +43,7 @@ class AboutWindowController: NSWindowController {
 		
 		let defaults = UserDefaults.standard
 		autoLaunch.state = NSControl.StateValue(rawValue: defaults.object(forKey: "autoLaunch") as! Int)
+		dimWhenLocked.state = defaults.bool(forKey: "dimWhenLocked") ? .on : .off
     }
 	
 	override func showWindow(_ sender: Any?) {
@@ -69,5 +71,9 @@ class AboutWindowController: NSWindowController {
 		else {
 			LoginItems.removeApp()
 		}
+	}
+	
+	@IBAction func changeDimWhenLocked(_ sender: NSButton) {
+		UserDefaults.standard.set(dimWhenLocked.state == .on, forKey: "dimWhenLocked")
 	}
 }

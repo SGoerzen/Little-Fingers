@@ -12,6 +12,7 @@ class StatusItemController: NSObject {
 	let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 	var isAccessibilityEnabled = false
 	var accessibilityTimer:Timer?
+	var dimWindows:[NSWindow] = []
 	
 	let aboutWindowController = AboutWindowController(windowNibName: "AboutWindow")
 	
@@ -30,7 +31,7 @@ class StatusItemController: NSObject {
 		}
 		
 		NotificationCenter.default.addObserver(self,
-		                                       selector: #selector(updateIcon),
+		                                       selector: #selector(lockChanged),
 		                                       name: NSNotification.Name(rawValue: SINotificationLockChanged),
 		                                       object: nil)
 	}
@@ -103,6 +104,70 @@ class StatusItemController: NSObject {
 	@objc func showAbout() {
 		NSApp.activate(ignoringOtherApps: true)
 		aboutWindowController.showWindow(NSApp.delegate)
+	}
+	
+	@objc func lockChanged() {
+		updateIcon()
+		updateDim()
+	}
+	
+	func updateDim() {
+		if TapController.isLocked() && UserDefaults.standard.bool(forKey: "dimWhenLocked") {
+			showDim()
+		}
+		else {
+			hideDim()
+		}
+	}
+	
+	// covers every screen (menu bar included) in black, e.g. for cleaning the display
+	func showDim() {
+		if !dimWindows.isEmpty {
+			return
+		}
+		for screen in NSScreen.screens {
+			let window = NSWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
+			window.backgroundColor = .black
+			window.isOpaque = false
+			window.alphaValue = 0
+			window.level = .screenSaver
+			window.ignoresMouseEvents = true
+			window.canHide = false
+			window.isReleasedWhenClosed = false
+			window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+			window.setFrame(screen.frame, display: false)
+			window.orderFrontRegardless()
+			dimWindows.append(window)
+		}
+		// the cursor can only be hidden while the app is active
+		NSApp.activate(ignoringOtherApps: true)
+		NSCursor.hide()
+		NSAnimationContext.runAnimationGroup({ context in
+			context.duration = 0.3
+			for window in dimWindows {
+				window.animator().alphaValue = 1
+			}
+		}, completionHandler: nil)
+	}
+	
+	func hideDim() {
+		if dimWindows.isEmpty {
+			return
+		}
+		let windows = dimWindows
+		dimWindows = []
+		NSCursor.unhide()
+		NSAnimationContext.runAnimationGroup({ context in
+			context.duration = 0.3
+			for window in windows {
+				window.animator().alphaValue = 0
+			}
+		}, completionHandler: {
+			for window in windows {
+				window.orderOut(nil)
+			}
+			(NSApp.delegate as! AppDelegate).hideApp()
+		})
 	}
 	
 	@objc func updateIcon() {

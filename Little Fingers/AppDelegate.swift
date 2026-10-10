@@ -21,6 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		
 		let defaults = UserDefaults.standard
 		defaults.register(defaults: ["autoLaunch": true,
+		                             "dimWhenLocked": false,
 		                             "firstRun": true])
 		
 		if defaults.object(forKey: "firstRun") as! Bool {
