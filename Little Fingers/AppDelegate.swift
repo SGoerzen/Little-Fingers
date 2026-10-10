@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	var statusItemController:StatusItemController!
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
-		NSApplication.shared().setActivationPolicy(.accessory)
+		NSApplication.shared.setActivationPolicy(.accessory)
 		
 		let defaults = UserDefaults.standard
 		defaults.register(defaults: ["autoLaunch": true,
@@ -28,7 +28,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			LoginItems.addApp()
 		}
 		
-		tapController = TapController()
+		// event taps can't be created without accessibility access; StatusItemController
+		// prompts for it and relaunches the app once it's granted
+		if TapController.isAccessibilityEnabled() {
+			tapController = TapController()
+		}
 		statusItemController = StatusItemController()
 	}
 
@@ -40,11 +44,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		hideWindows()
 	}
 	
-	func windowWillClose() {
+	@objc func windowWillClose() {
 		NSApp.hide(nil)
 	}
 	
-	func hideWindows() {
+	@objc func hideWindows() {
 		for window in NSApp.windows {
 			if window.isKind(of: NSPanel.self) && window.isVisible {
 				window.orderOut(nil)
@@ -52,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		}
 	}
 	
-	func hideApp() {
+	@objc func hideApp() {
 		var visibleWindows:Int = 0
 		for window in NSApp.windows {
 			if window.isKind(of: NSPanel.self) && window.isVisible {

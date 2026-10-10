@@ -41,7 +41,7 @@ class AboutWindowController: NSWindowController {
 		creditsTextView.readRTFD(fromFile: credits!)
 		
 		let defaults = UserDefaults.standard
-		autoLaunch.state = defaults.object(forKey: "autoLaunch") as! Int
+		autoLaunch.state = NSControl.StateValue(rawValue: defaults.object(forKey: "autoLaunch") as! Int)
     }
 	
 	override func showWindow(_ sender: Any?) {
@@ -55,15 +55,15 @@ class AboutWindowController: NSWindowController {
 			let autoLaunchInt = stillAutoLaunch ? 1 : 0
 			defaults.set(autoLaunchInt, forKey: "autoLaunch")
 			if autoLaunch != nil {
-				autoLaunch.state = autoLaunchInt
+				autoLaunch.state = NSControl.StateValue(rawValue: autoLaunchInt)
 			}
 		}
 	}
 	
 	@IBAction func changeAutoLaunch(_ sender: NSButton) {
-		UserDefaults.standard.set(autoLaunch.state, forKey: "autoLaunch")
+		UserDefaults.standard.set(autoLaunch.state.rawValue, forKey: "autoLaunch")
 		
-		if autoLaunch.state == 1 {
+		if autoLaunch.state == .on {
 			LoginItems.addApp()
 		}
 		else {
