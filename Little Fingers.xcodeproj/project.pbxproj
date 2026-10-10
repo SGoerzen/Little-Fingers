@@ -11,6 +11,7 @@
 		BA39CA281E452F1C0004AF68 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA39CA271E452F1C0004AF68 /* Assets.xcassets */; };
 		BA39CA2B1E452F1C0004AF68 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA39CA291E452F1C0004AF68 /* MainMenu.xib */; };
 		BA5D1B921E464BC4005ED4FA /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = BA5D1B911E464BC4005ED4FA /* Credits.rtf */; };
+		CF0A00021E47CE490075C35C /* CreditsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0A00011E47CE490075C35C /* CreditsWindowController.swift */; };
 		BAC880131E47CE490075C35C /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC880111E47CE490075C35C /* AboutWindowController.swift */; };
 		BAC880141E47CE490075C35C /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BAC880121E47CE490075C35C /* AboutWindow.xib */; };
 		BAC880171E48AE720075C35C /* LoginItems.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC880161E48AE720075C35C /* LoginItems.m */; };
@@ -28,6 +29,7 @@
 		BA39CA2A1E452F1C0004AF68 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		BA39CA2C1E452F1C0004AF68 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA5D1B911E464BC4005ED4FA /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		CF0A00011E47CE490075C35C /* CreditsWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditsWindowController.swift; sourceTree = "<group>"; };
 		BAC880111E47CE490075C35C /* AboutWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutWindowController.swift; sourceTree = "<group>"; };
 		BAC880121E47CE490075C35C /* AboutWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindow.xib; sourceTree = "<group>"; };
 		BAC880151E48AE720075C35C /* LoginItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginItems.h; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 				BA39CA251E452F1B0004AF68 /* AppDelegate.swift */,
 				BADFC8C61E45706600213EEA /* StatusItemController.swift */,
 				BAC880111E47CE490075C35C /* AboutWindowController.swift */,
+				CF0A00011E47CE490075C35C /* CreditsWindowController.swift */,
 				BA39CA271E452F1C0004AF68 /* Assets.xcassets */,
 				BA5D1B911E464BC4005ED4FA /* Credits.rtf */,
 				BADFC8BE1E456E5F00213EEA /* off.pdf */,
@@ -174,6 +177,7 @@
 				BADFC8C71E45706600213EEA /* StatusItemController.swift in Sources */,
 				BAC880171E48AE720075C35C /* LoginItems.m in Sources */,
 				BAC880131E47CE490075C35C /* AboutWindowController.swift in Sources */,
+				CF0A00021E47CE490075C35C /* CreditsWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

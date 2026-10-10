@@ -15,6 +15,7 @@ class StatusItemController: NSObject {
 	var dimWindows:[NSWindow] = []
 	
 	let aboutWindowController = AboutWindowController(windowNibName: "AboutWindow")
+	let creditsWindowController = CreditsWindowController()
 	
 	override init() {
 		super.init()
@@ -88,6 +89,10 @@ class StatusItemController: NSObject {
 		item.target = self
 		menu.addItem(item)
 		
+		let creditsItem = NSMenuItem(title: "Credits…", action: #selector(showCredits), keyEquivalent: "")
+		creditsItem.target = self
+		menu.addItem(creditsItem)
+		
 		menu.addItem(NSMenuItem.separator())
 		
 		menu.addItem(NSMenuItem(title: "Quit Little Fingers", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
@@ -104,6 +109,11 @@ class StatusItemController: NSObject {
 	@objc func showAbout() {
 		NSApp.activate(ignoringOtherApps: true)
 		aboutWindowController.showWindow(NSApp.delegate)
+	}
+	
+	@objc func showCredits() {
+		NSApp.activate(ignoringOtherApps: true)
+		creditsWindowController.showWindow(nil)
 	}
 	
 	@objc func lockChanged() {
