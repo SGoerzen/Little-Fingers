@@ -33,13 +33,20 @@ make install    # build and copy to /Applications (override with INSTALL_DIR=…
 make uninstall  # remove from /Applications
 make zip        # build and package as build/Little-Fingers.zip
 make clean      # remove build artifacts
+make signing-cert  # create the local signing certificate (once)
 ```
 
 The built app lands in `build/DerivedData/Build/Products/<Configuration>/Little Fingers.app`. You can also open `Little Fingers.xcodeproj` in Xcode and run the **Little Fingers** scheme.
 
-### Accessibility after rebuilding
+### Code signing and Accessibility
 
-Local builds are signed ad hoc, so each rebuild looks like a new app to macOS and the existing Accessibility entry stops working. If the shortcut does nothing after a rebuild, remove Little Fingers from the Accessibility list and grant access again.
+macOS ties the Accessibility permission to the app's code signature. To keep the permission across rebuilds, create a local signing certificate once:
+
+```bash
+make signing-cert
+```
+
+From then on, `make` signs every build with that certificate, so you only grant Accessibility once. Without the certificate the app is signed ad hoc. Every rebuild then looks like a new app to macOS, and you have to remove Little Fingers from the Accessibility list and grant access again.
 
 ## How it works
 

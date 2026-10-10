@@ -6,6 +6,7 @@ BUILD_DIR     := build
 DERIVED_DATA  := $(BUILD_DIR)/DerivedData
 PRODUCT       := $(DERIVED_DATA)/Build/Products/$(CONFIGURATION)/$(APP_NAME)
 INSTALL_DIR   ?= /Applications
+SIGN_IDENTITY ?= Little Fingers Local Signing
 
 XCODEBUILD := xcodebuild \
 	-project "$(PROJECT)" \
@@ -14,7 +15,7 @@ XCODEBUILD := xcodebuild \
 	-derivedDataPath "$(DERIVED_DATA)" \
 	-destination 'platform=macOS'
 
-.PHONY: all build debug release run install uninstall zip clean help
+.PHONY: all build debug release run install uninstall zip clean signing-cert help
 
 all: build
 
@@ -28,9 +29,18 @@ help:
 	@echo "  uninstall  Remove the app from $(INSTALL_DIR)"
 	@echo "  zip        Build and package the app as build/Little-Fingers.zip"
 	@echo "  clean      Remove build artifacts"
+	@echo "  signing-cert  Create the local signing certificate (once)"
 
+# Re-sign with a stable certificate so macOS keeps the Accessibility permission
+# across rebuilds; falls back to the ad hoc signature if it doesn't exist.
 build:
 	$(XCODEBUILD) build
+	@if security find-certificate -c "$(SIGN_IDENTITY)" >/dev/null 2>&1; then \
+		codesign --force --deep --sign "$(SIGN_IDENTITY)" "$(PRODUCT)"; \
+		echo "Signed with \"$(SIGN_IDENTITY)\""; \
+	else \
+		echo "warning: \"$(SIGN_IDENTITY)\" not found, app is signed ad hoc (run make signing-cert)"; \
+	fi
 	@echo "Built: $(PRODUCT)"
 
 debug:
@@ -56,3 +66,6 @@ zip: build
 
 clean:
 	rm -rf "$(BUILD_DIR)"
+
+signing-cert:
+	scripts/create-signing-cert.sh "$(SIGN_IDENTITY)"
