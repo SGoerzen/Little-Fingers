@@ -13,7 +13,7 @@ XCODEBUILD := xcodebuild \
 	-scheme "$(SCHEME)" \
 	-configuration $(CONFIGURATION) \
 	-derivedDataPath "$(DERIVED_DATA)" \
-	-destination 'platform=macOS'
+	-destination 'generic/platform=macOS'
 
 .PHONY: all build debug release run install uninstall zip clean signing-cert help
 
