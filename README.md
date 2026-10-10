@@ -10,7 +10,8 @@ Press **⌃ Control + ⌥ Option + ⇧ Shift + ⌘ Command + L** to lock all inp
 
 - The menu-bar icon shows whether input is locked.
 - The lock pauses on its own when the screensaver starts, the screen locks, or a shutdown or logout begins.
-- The app has no Dock icon. Use the menu-bar item to open **About** (which has a **Launch at login** option) or to quit.
+- The app has no Dock icon. Use the menu-bar item to open **About** (with options for **Darken display while locked** and **Launch at login**), **Credits**, or to quit.
+- With **Darken display while locked** turned on, all screens turn black while locked. That's handy for cleaning the display.
 
 > **Note:** The `L` key is matched by its physical key code, which is where `L` sits on a US layout. On other keyboard layouts the shortcut may be a different key.
 
@@ -54,4 +55,5 @@ From then on, `make` signs every build with that certificate, so you only grant 
 
 ## Credits
 
-Little Fingers was created by Shaun Inman. All original rights belong to him.
+- [Shaun Inman](https://github.com/shauninman): original author, versions up to 1.1. All original rights belong to him.
+- [Dr.-Ing. Sergej Görzen](https://github.com/SGoerzen): version 1.2
