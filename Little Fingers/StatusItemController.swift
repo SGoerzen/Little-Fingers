@@ -180,6 +180,17 @@ class StatusItemController: NSObject {
 			window.isReleasedWhenClosed = false
 			window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
 			window.setFrame(screen.frame, display: false)
+			
+			// dim gray, so the hint doesn't get in the way when cleaning the display
+			let hint = NSTextField(labelWithString: "Press ⌃⌥⇧⌘L to unlock")
+			hint.font = NSFont.systemFont(ofSize: 24, weight: .medium)
+			hint.textColor = NSColor(white: 0.35, alpha: 1)
+			hint.translatesAutoresizingMaskIntoConstraints = false
+			window.contentView!.addSubview(hint)
+			NSLayoutConstraint.activate([
+				hint.centerXAnchor.constraint(equalTo: window.contentView!.centerXAnchor),
+				hint.centerYAnchor.constraint(equalTo: window.contentView!.centerYAnchor),
+			])
 			window.orderFrontRegardless()
 			dimWindows.append(window)
 		}
