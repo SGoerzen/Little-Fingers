@@ -7,12 +7,14 @@
 //
 
 import Cocoa
+import Carbon
 
 class StatusItemController: NSObject {
 	let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 	var isAccessibilityEnabled = false
 	var accessibilityTimer:Timer?
 	var dimWindows:[NSWindow] = []
+	var missingAccessHotKey:EventHotKeyRef?
 	
 	let aboutWindowController = AboutWindowController(windowNibName: "AboutWindow")
 	let creditsWindowController = CreditsWindowController()
@@ -49,6 +51,7 @@ class StatusItemController: NSObject {
 		}
 		else {
 			showSecurityPrivacy()
+			registerMissingAccessHotKey()
 		}
 		accessibilityTimer = Timer.scheduledTimer(timeInterval: 0.5,
 		                                          target: self,
@@ -98,6 +101,37 @@ class StatusItemController: NSObject {
 		menu.addItem(NSMenuItem(title: "Quit Little Fingers", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
 		
 		statusItem.menu = menu
+	}
+	
+	// without accessibility access the event taps can't see the lock shortcut, but a
+	// regular hot key needs no permission, so use one to explain why nothing happens
+	func registerMissingAccessHotKey() {
+		var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+		let handler: EventHandlerUPP = { _, _, userData in
+			let controller = Unmanaged<StatusItemController>.fromOpaque(userData!).takeUnretainedValue()
+			controller.showMissingAccessAlert()
+			return noErr
+		}
+		InstallEventHandler(GetApplicationEventTarget(), handler, 1, &eventType,
+		                    Unmanaged.passUnretained(self).toOpaque(), nil)
+		
+		let hotKeyID = EventHotKeyID(signature: OSType(0x4C46_4E47), id: 1) // 'LFNG'
+		let modifiers = UInt32(controlKey | optionKey | shiftKey | cmdKey)
+		RegisterEventHotKey(UInt32(kVK_ANSI_L), modifiers, hotKeyID,
+		                    GetApplicationEventTarget(), 0, &missingAccessHotKey)
+	}
+	
+	func showMissingAccessAlert() {
+		NSApp.activate(ignoringOtherApps: true)
+		let alert = NSAlert()
+		alert.alertStyle = .warning
+		alert.messageText = "Little Fingers can't lock your Mac"
+		alert.informativeText = "macOS hasn't allowed Little Fingers to control this computer. Turn it on in System Settings → Privacy & Security → Accessibility.\n\nIf Little Fingers is already listed there, remove it with the – button and allow it again."
+		alert.addButton(withTitle: "Open System Settings")
+		alert.addButton(withTitle: "Cancel")
+		if alert.runModal() == .alertFirstButtonReturn {
+			NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
+		}
 	}
 	
 	func showSecurityPrivacy() {
