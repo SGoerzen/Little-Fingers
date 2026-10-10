@@ -2,7 +2,11 @@
 
 Little fingers want to explore. Little Fingers is a small macOS menu-bar app that locks your keyboard, trackpad, Touch Bar and mouse with one shortcut. It's handy for FaceTime with family, watching videos, or protecting your work while a child sits on your lap.
 
-Originally written by [Shaun Inman](https://github.com/shauninman/Little-Fingers) in 2017. This fork updates it to build with current Xcode (Swift 5, macOS 12+).
+Originally written by [Shaun Inman](https://github.com/shauninman/Little-Fingers) in 2017. This fork (version 1.2) updates it to build with current Xcode (Swift 5, macOS 12+) and adds a display-darkening mode, a Credits window and clearer handling of the Accessibility permission.
+
+<p align="center">
+  <img src="docs/screenshot.png" width="396" alt="The Little Fingers About window with the options Darken display while locked and Launch Little Fingers at login">
+</p>
 
 ## Usage
 
@@ -11,7 +15,7 @@ Press **⌃ Control + ⌥ Option + ⇧ Shift + ⌘ Command + L** to lock all inp
 - The menu-bar icon shows whether input is locked.
 - The lock pauses on its own when the screensaver starts, the screen locks, or a shutdown or logout begins.
 - The app has no Dock icon. Use the menu-bar item to open **About** (with options for **Darken display while locked** and **Launch at login**), **Credits**, or to quit.
-- With **Darken display while locked** turned on, all screens turn black while locked. That's handy for cleaning the display.
+- With **Darken display while locked** turned on, all screens turn black while locked and the cursor is hidden. That's handy for cleaning the display. A dim hint in the middle of each screen shows the shortcut to unlock.
 
 > **Note:** The `L` key is matched by its physical key code, which is where `L` sits on a US layout. On other keyboard layouts the shortcut may be a different key.
 
@@ -20,7 +24,7 @@ Press **⌃ Control + ⌥ Option + ⇧ Shift + ⌘ Command + L** to lock all inp
 - macOS 12 or later
 - **Accessibility** permission, which the app needs to intercept input
 
-The first time you launch it, macOS asks for Accessibility access. Allow it under **System Settings → Privacy & Security → Accessibility**. Little Fingers restarts itself once access is granted.
+The first time you launch it, macOS asks for Accessibility access. Allow it under **System Settings → Privacy & Security → Accessibility**. Little Fingers restarts itself once access is granted. If you press the shortcut while access is missing, Little Fingers shows an alert with a button that opens the Accessibility settings.
 
 ## Building
 
@@ -51,7 +55,7 @@ From then on, `make` signs every build with that certificate, so you only grant 
 
 ## How it works
 
-`TapController.m` installs two `CGEventTap`s. One listens for the lock shortcut. The other swallows every input event while the Mac is locked. `StatusItemController.swift` manages the menu-bar item and the About window, and `LoginItems.m` handles launch at login.
+`TapController.m` installs two `CGEventTap`s. One listens for the lock shortcut. The other swallows every input event while the Mac is locked. `StatusItemController.swift` manages the menu-bar item, the About and Credits windows, and the black overlay for darkening the display, and `LoginItems.m` handles launch at login.
 
 ## Credits
 
