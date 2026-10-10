@@ -9,7 +9,7 @@
 import Cocoa
 
 class StatusItemController: NSObject {
-	let statusItem = NSStatusBar.system().statusItem(withLength: NSVariableStatusItemLength)
+	let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 	var isAccessibilityEnabled = false
 	var accessibilityTimer:Timer?
 	
@@ -55,7 +55,7 @@ class StatusItemController: NSObject {
 		                                          repeats: true)
 	}
 	
-	func updateAccessibility() {
+	@objc func updateAccessibility() {
 		let wasAccessibilityEnabled = isAccessibilityEnabled
 		isAccessibilityEnabled = TapController.isAccessibilityEnabled()
 		if isAccessibilityEnabled {
@@ -89,7 +89,7 @@ class StatusItemController: NSObject {
 		
 		menu.addItem(NSMenuItem.separator())
 		
-		menu.addItem(NSMenuItem(title: "Quit Little Fingers", action: #selector(NSApp.terminate), keyEquivalent: ""))
+		menu.addItem(NSMenuItem(title: "Quit Little Fingers", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
 		
 		statusItem.menu = menu
 	}
@@ -101,12 +101,12 @@ class StatusItemController: NSObject {
 		appleScript?.executeAndReturnError(nil)
 	}
 	
-	func showAbout() {
+	@objc func showAbout() {
 		NSApp.activate(ignoringOtherApps: true)
 		aboutWindowController.showWindow(NSApp.delegate)
 	}
 	
-	func updateIcon() {
+	@objc func updateIcon() {
 		if let button = statusItem.button {
 			if TapController.isLocked() {
 				if let image = NSImage(named: "on") {
