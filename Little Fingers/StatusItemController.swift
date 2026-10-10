@@ -95,10 +95,9 @@ class StatusItemController: NSObject {
 	}
 	
 	func showSecurityPrivacy() {
-		let path = Bundle.main.path(forResource: "privacy", ofType: "scpt")
-		let url = URL.init(fileURLWithPath: path!)
-		let appleScript = NSAppleScript.init(contentsOf: url, error: nil)
-		appleScript?.executeAndReturnError(nil)
+		// shows the system's accessibility prompt, which links to System Settings
+		let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
+		AXIsProcessTrustedWithOptions(options)
 	}
 	
 	@objc func showAbout() {

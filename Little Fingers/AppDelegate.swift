@@ -28,7 +28,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			LoginItems.addApp()
 		}
 		
-		tapController = TapController()
+		// event taps can't be created without accessibility access; StatusItemController
+		// prompts for it and relaunches the app once it's granted
+		if TapController.isAccessibilityEnabled() {
+			tapController = TapController()
+		}
 		statusItemController = StatusItemController()
 	}
 
